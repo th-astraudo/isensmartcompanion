@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import java.util.Date
 import java.io.Serializable
@@ -16,10 +18,10 @@ import java.util.Locale
 
 // Définition du modèle d'événement
 data class Event(
-    val id: Int,
+    val id: String,
     val title: String,
     val description: String,
-    val date: Date,
+    val date: String,
     val location: String,
     val category: String
 ) : Serializable
@@ -30,43 +32,43 @@ fun generateFakeEvents(): List<Event> {
 
     events.add(
         Event(
-            id = 1,
+            id = "a",
             title = "Soirée BDE",
             description = "Une soirée inoubliable organisée par le BDE.",
-            date = format.parse("2025-03-15") ?: Date(),
-            location = "Salle des fêtes, ISEN",
+            date = "2025-02-27",
+            location = "Kudeta",
             category = "Soirée"
         )
     )
 
     events.add(
         Event(
-            id = 2,
+            id = "b",
             title = "Gala ISEN",
             description = "Le gala annuel avec dîner et animations.",
-            date = format.parse("2025-05-20") ?: Date(),
-            location = "Hôtel Hilton",
+            date = "2025-03-21",
+            location = "Chateau",
             category = "Gala"
         )
     )
 
     events.add(
         Event(
-            id = 3,
+            id = "c",
             title = "Journée de Cohésion",
             description = "Une journée pour renforcer l’esprit d’équipe.",
-            date = format.parse("2025-04-10") ?: Date(),
-            location = "Parc des Expositions",
+            date = "2024-09-10",
+            location = "Plage du Mourillon",
             category = "Cohésion"
         )
     )
 
     events.add(
         Event(
-            id = 4,
+            id = "d",
             title = "Soirée du jeudi",
             description = "Une soirée inoubliable au Kudeta.",
-            date = format.parse("2025-02-28") ?: Date(),
+            date = "2025-02-28",
             location = "Kudeta Bar",
             category = "Soirée"
         )
@@ -74,10 +76,10 @@ fun generateFakeEvents(): List<Event> {
 
     events.add(
         Event(
-            id = 5,
+            id = "e",
             title = "Afterwork",
             description = "Venez vous détendre après les cours.",
-            date = format.parse("2025-03-05") ?: Date(),
+            date = "2025-03-03",
             location = "Café de la paix",
             category = "Afterwork"
         )
@@ -88,33 +90,60 @@ fun generateFakeEvents(): List<Event> {
 
 @Composable
 fun EventItem(event: Event, context: Context) {
+    val context = LocalContext.current
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        shape = RoundedCornerShape(8.dp),
+            .padding(vertical = 8.dp, horizontal = 16.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = event.title, style = MaterialTheme.typography.titleMedium, color = Color.Black)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally // Centrage des éléments
+        ) {
+            // Titre
+            Text(
+                text = event.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = event.description, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+
+            // Description
+            Text(
+                text = event.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                onClick = {
-                    // Créer l'Intent pour démarrer EventDetailActivity
-                    val intent = Intent(context, EventDetailActivity::class.java).apply {
-                        // Passer l'objet Event sérialisé
-                        putExtra("event", event)
-                    }
-                    context.startActivity(intent)
-                },
-                modifier = Modifier.align(Alignment.End)
+            // Bouton centré
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
             ) {
-                Text("Détails")
+                Button(
+                    onClick = {
+                        val intent = Intent(context, EventDetailActivity::class.java).apply {
+                            putExtra("event", event)
+                        }
+                        context.startActivity(intent)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text("Détails")
+                }
             }
         }
     }
